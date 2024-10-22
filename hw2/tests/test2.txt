@@ -1,0 +1,4 @@
+d 1 1
+c b.txt
+g b.txt
+q

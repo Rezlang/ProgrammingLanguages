@@ -1,0 +1,5 @@
+d 1 1
+c bee_short.txt
+i fs0
+g bee_short.txt
+q

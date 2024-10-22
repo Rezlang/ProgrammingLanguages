@@ -1,0 +1,5 @@
+d 1 1
+i fs0
+c d.txt
+g d.txt
+q 
