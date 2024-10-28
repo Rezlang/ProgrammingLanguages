@@ -1,0 +1,14 @@
+d 4 2
+c a.txt
+i fs3
+g a.txt
+c b.txt
+i fs0
+g b.txt
+c c.txt
+i fs1
+c d.txt
+i fs2
+g d.txt
+g c.txt
+q 

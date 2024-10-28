@@ -42,6 +42,7 @@ sleep 1
 erl -noshell -deatached -eval "$commands"
 sleep 1
 
+
 # for value in "${files[@]}"
 # do
 #     file1="input/$value"

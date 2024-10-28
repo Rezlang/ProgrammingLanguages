@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+export ERL_CRASH_DUMP="./crash_dump.log"
+
 
 # Compile code
 erlc main.erl util.erl
@@ -11,6 +13,7 @@ while IFS= read -r line || [ -n "$line" ];
 do
     windows_clean_line=$(echo $line | tr -d '\r')
     args=($windows_clean_line)
+    echo $windows_clean_line
     case ${args[0]} in
         d)
             for ((i = 0 ; i < ${args[1]} ; i++ )); 

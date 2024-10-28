@@ -1,0 +1,8 @@
+d 5 3
+c a.txt
+c d.txt
+g a.txt
+g d.txt
+c bee_short.txt
+g bee_short.txt
+q 

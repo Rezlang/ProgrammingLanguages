@@ -1,0 +1,23 @@
+d 10 6
+c a.txt
+i fs6
+c b.txt
+c c.txt
+c d.txt
+g b.txt
+c e.txt
+g e.txt
+c f.txt
+c g.txt
+i fs7
+i fs8
+i fs9
+i fs0
+g a.txt
+i fs1
+i fs2
+g c.txt
+g d.txt
+g f.txt
+g g.txt
+q 
