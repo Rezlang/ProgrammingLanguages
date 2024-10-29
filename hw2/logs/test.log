@@ -1,4 +1,17 @@
-Mon Oct 28 17:21:13 EDT 2024
-start_dir_service
-dir_service:init~n
-Failed to ping fs0@localhost
+Tue Oct 29 00:52:26 EDT 2024
+<0.10.0>: start_dir_service
+<0.10.0>: dir_service:init~n
+<0.10.0>: dir_service:spawn_file_server/fs0
+<0.10.0>: dir_service ready for commands
+<0.89.0>: fiser:init
+<0.89.0>: fiser: fs0 ready for commands, replicating to: fs0
+<0.10.0>: client:create
+<0.10.0>: Attempting to send distributed: dir_pid
+<0.10.0>: dir_service:handle_info/create~n
+<0.10.0>: Attempting to send distributed: fs0
+<0.89.0>: fiser:handle_cast/create~n
+<0.89.0>: fiser:save_maybe/~n
+<0.89.0>: ./servers/fs0/a.txt
+<0.89.0>: ~n
+<0.10.0>: client:quit
+<0.10.0>: Attempting to send distributed: dir_pid

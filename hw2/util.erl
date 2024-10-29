@@ -1,6 +1,6 @@
 % Stores functions to be used by students
 -module(util).
--export([get_global_pid/2,isDistributed/0,hashFileName/2,createDir/1,readFile/1,get_all_lines/1,saveFile/2,write_log/1]).
+-export([isDistributed/0,hashFileName/2,createDir/1,readFile/1,get_all_lines/1,saveFile/2,write_log/1, send/3]).
 
 % Functions in here can be called in main.erl by doing (for example):
 % util:saveFile(path/to/file.txt, "string")
@@ -47,23 +47,18 @@ write_log(Message) ->
 	{ok, File} = file:open(LogFile, [append]),
 	
 	% Write the message followed by a newline
-	io:format(File, "~s~n", [Message]),
+	io:format(File, "~s~n", [pid_to_list(self()) ++ ": " ++ Message]),
 	
 	% Close the file
 	file:close(File),
 	
 	ok.
-get_global_pid(0, Name) -> 
-	util:write_log("couldnt find pid with name " ++ atom_to_list(Name)),
-	ok;
-get_global_pid(N, Name) ->
-	util:write_log("getting " ++ atom_to_list(Name)),
-	case global:whereis_name(Name) of
-		Pid when is_pid(Pid) -> 
-			util:write_log("Successfully got pid: " ++ pid_to_list(Pid)),
-			Pid;
-		_ -> 
-			timer:sleep(50), % Wait and retry
-			get_global_pid(N-1, Name)
-	end.
-
+send(Msg, "dir_pid", true) ->
+	write_log("Attempting to send distributed: dir_pid"),
+	{dir_pid, ds@localhost} ! Msg;
+send(Msg, Name, true) ->
+	write_log("Attempting to send distributed: " ++ Name),
+	{list_to_atom(Name), list_to_atom(Name ++ "@localhost")} ! Msg;
+send(Msg, Name, false) ->
+	write_log("Attempting to send concurrent: " ++ Name),
+	whereis(Name) ! Msg.

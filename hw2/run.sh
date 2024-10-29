@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-clear
 # Clean and create output directories
 rm -rf ./output
 mkdir -p output/downloads
@@ -47,7 +46,7 @@ test_name=$2
 
 
 # Run the script with the test name as an argument
-$run_script "$test_name"
+$run_script "$test_name" > /dev/null
 
 # Strip the file extension from test_name (if any) for comparison
 test_name_no_ext="${test_name%.*}"

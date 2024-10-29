@@ -1,83 +1,66 @@
 -module(dir_service).
--behaviour(gen_server).
-
-%% API
--export([start_link/1]).
 
 %% gen_server callbacks
--export([init/1, handle_call/3, handle_cast/2, terminate/2]).
+-export([init/1, handle_command/2, terminate/2]).
 
-%% Starts the gen_server
-start_link(Args) ->
-    gen_server:start_link({global, dir_pid}, dir_service, Args, []).
 init({Num_file_servers, R}) ->
     util:write_log("dir_service:init~n"),
-    global:register_name(dir_pid, self()),
-    NodeList = [list_to_atom("fs" ++ integer_to_list(N) ++ "@localhost") || N <- lists:seq(0, Num_file_servers - 1)],
-    %% Connect to each file server node
-    [ begin 
-        case net_adm:ping(Node) of
-          pong ->
-            util:write_log("Pinged " ++ atom_to_list(Node));
-          pang ->
-            util:write_log("Failed to ping " ++ atom_to_list(Node))
-        end
-    end || Node <- NodeList],
-    timer:sleep(1000), %% Wait for nodes to be fully connected
-    PidList = spawn_file_servers(Num_file_servers, []),
-    assign_next_pid(PidList),
-    {ok, #{r => R, num_servers => Num_file_servers}}.
+    register(dir_pid, self()),
+
+    spawn_file_servers(Num_file_servers, Num_file_servers, util:isDistributed()),
+    util:write_log("dir_service ready for commands"),
+    command_loop(#{r => R, num_servers => Num_file_servers}).
+
+command_loop(S) ->
+    receive
+        Arg ->
+            {noreply, State} = handle_command(Arg, S),
+            command_loop(State)
+    end.
 
 %% Spawn the file servers and register each one by name
-spawn_file_servers(0, PidList) ->
-    util:write_log("dir_service:spawn_file_servers/0~n"),
-    lists:reverse(PidList);
-spawn_file_servers(N, PidList) ->
-    Name = list_to_atom("fs" ++ integer_to_list(N - 1)),
+spawn_file_servers(0, _,  _) ->
+    ok;
+spawn_file_servers(N, Total_File_Servers, true) ->
+    Name = "fs" ++ integer_to_list(N - 1),
+    NameAtom = list_to_atom(Name),
     Node = list_to_atom("fs" ++ integer_to_list(N - 1) ++ "@localhost"),
-    {ok, NewPid} = rpc:call(Node, fiser, start_link, [Name]),
-    _ = rpc:call(Node, global, register_name, [Name, NewPid]),
+    erlang:spawn_link(Node, fiser, init, [NameAtom, N, Total_File_Servers]),
+    util:write_log("dir_service:spawn_file_server/" ++ atom_to_list(NameAtom)),
+    spawn_file_servers(N - 1, Total_File_Servers, true);
+spawn_file_servers(N, Total_File_Servers, false) ->
+    Name = "fs" ++ integer_to_list(N - 1),
+    NameAtom = list_to_atom(Name),
+    erlang:spawn_link(fiser, init, [NameAtom, N, Total_File_Servers]),
+    util:write_log("dir_service:spawn_file_server/" ++ atom_to_list(NameAtom)),
+    spawn_file_servers(N - 1, Total_File_Servers, false).
 
-    % util:write_log(erlang:display(registered())) ,
-    spawn_file_servers(N - 1, [NewPid | PidList]).
 
-assign_next_pid(PidList) ->
-    Pids = PidList,
-    PidListWithNext = lists:zip(Pids, lists:append(tl(Pids), [hd(Pids)])),
-    lists:foreach(fun({CurrentPid, NextPid}) ->
-        gen_server:cast(CurrentPid, {next_pid, NextPid})
-    end, PidListWithNext),
-    ok.
-    
-
-handle_call(_,_, State) ->
-    {noreply, State}.
-
-handle_cast({create, File_name, File_contents}, State) ->
-    util:write_log("dir_service:handle_cast/create~n"),
+%% Handle Erlang messages
+handle_command({create, File_name, File_contents}, State) ->
+    util:write_log("dir_service:handle_info/create~n"),
     File_hash = util:hashFileName(File_name, maps:get(num_servers, State)),
-    PidName = list_to_atom("fs" ++ integer_to_list(File_hash)),
-    Pid = util:get_global_pid(3,PidName),
-    gen_server:cast(Pid, {create, {File_name, File_contents, maps:get(r, State)}}),
+    PidName = "fs" ++ integer_to_list(File_hash),
+    util:send({create, {File_name, File_contents, maps:get(r, State)}}, PidName, util:isDistributed()),
     {noreply, State};
 
-handle_cast({inactive, File_server}, State) ->
-    util:write_log("dir_service:handle_cast/inactive~n"),
-    Pid = util:get_global_pid(3,File_server),
-    gen_server:cast(Pid, {inactive, {}}),
+handle_command({inactive, Fs}, State) ->
+    File_server = atom_to_list(Fs),
+    util:write_log("dir_service:handle_info/inactive~n"),
+    util:send({inactive, {}}, File_server, util:isDistributed()),
     {noreply, State};
 
-handle_cast({quit, _}, State) ->
-    util:write_log("dir_service:handle_cast/quit~n"),
+handle_command({quit, _}, State) ->
+    util:write_log("dir_service:handle_info/quit~n"),
     Num_file_servers = maps:get(num_servers, State),
-    propogate_kill(Num_file_servers, State);
+    propogate_kill(Num_file_servers, State),
+    {noreply, State};
 
-handle_cast({request, File_name, From}, State) -> 
-    util:write_log("dir_service:handle_cast/request~n"),
+handle_command({request, File_name}, State) ->
+    util:write_log("dir_service:handle_info/request~n"),
     File_hash = util:hashFileName(File_name, maps:get(num_servers, State)),
-    PidName = list_to_atom("fs" ++ integer_to_list(File_hash)),
-    Pid = util:get_global_pid(3,PidName),
-    gen_server:cast(Pid, {request, {File_name, maps:get(r, State), From}}),
+    Name = "fs" ++ integer_to_list(File_hash),
+    util:send({request, {File_name, maps:get(r, State)}}, Name, util:isDistributed()),
     {noreply, State}.
 
 terminate(_Reason, State) ->
@@ -87,6 +70,5 @@ propogate_kill(0, State) ->
     terminate("Manual quit", State);
 propogate_kill(N, State) ->
     PidName = list_to_atom("fs" ++ integer_to_list(N)),
-    Pid = util:get_global_pid(3,PidName),
-    gen_server:cast(Pid, quit),
+    util:send(quit, PidName, util:isDistributed()),
     propogate_kill(N-1, State).
