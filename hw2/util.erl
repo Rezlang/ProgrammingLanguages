@@ -1,6 +1,7 @@
 % Stores functions to be used by students
 -module(util).
--export([isDistributed/0,hashFileName/2,createDir/1,readFile/1,get_all_lines/1,saveFile/2,write_log/1, send/3]).
+-export([isDistributed/0,hashFileName/2,createDir/1,readFile/1,get_all_lines/1,saveFile/2]).
+% -export([write_log/1, send/3]).
 
 % Functions in here can be called in main.erl by doing (for example):
 % util:saveFile(path/to/file.txt, "string")
@@ -39,26 +40,19 @@ get_all_lines(Device) ->
 		Line -> Line ++ get_all_lines(Device)
 	end.
 
-write_log(Message) ->
-	% Define the log file path
-	LogFile = "./logs/test.log",
-	
-	% Open the file in append mode
-	{ok, File} = file:open(LogFile, [append]),
-	
-	% Write the message followed by a newline
-	io:format(File, "~s~n", [pid_to_list(self()) ++ ": " ++ Message]),
-	
-	% Close the file
-	file:close(File),
-	
-	ok.
-send(Msg, "dir_pid", true) ->
-	write_log("Attempting to send distributed: dir_pid"),
-	{dir_pid, ds@localhost} ! Msg;
-send(Msg, Name, true) ->
-	write_log("Attempting to send distributed: " ++ Name),
-	{list_to_atom(Name), list_to_atom(Name ++ "@localhost")} ! Msg;
-send(Msg, Name, false) ->
-	write_log("Attempting to send concurrent: " ++ Name),
-	whereis(Name) ! Msg.
+% write_log(Message) ->
+% 	LogFile = "./logs/test.log",
+% 	{ok, File} = file:open(LogFile, [append]),
+% 	io:format(File, "~s~n", [pid_to_list(self()) ++ ": " ++ Message]),
+% 	file:close(File),
+% 	ok.
+
+% send(Msg, "dir_pid", true) ->
+% 	write_log("Attempting to send distributed: dir_pid"),
+% 	{dir_pid, ds@localhost} ! Msg;
+% send(Msg, Name, true) ->
+% 	write_log("Attempting to send distributed: " ++ Name),
+% 	{list_to_atom(Name), list_to_atom(Name ++ "@localhost")} ! Msg;
+% send(Msg, Name, false) ->
+% 	write_log("Attempting to send concurrent: " ++ Name),
+% 	whereis(list_to_atom(Name)) ! Msg.

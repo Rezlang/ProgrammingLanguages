@@ -5,8 +5,9 @@ rm -rf ./output
 mkdir -p output/downloads
 mkdir -p output/servers
 
-rm crash_dump.log
-rm ./logs/test.log
+rm crash_dump.log > /dev/null 2>&1
+rm erl_crash.dump > /dev/null 2>&1
+rm ./logs/test.log > /dev/null 2>&1
 touch ./logs/test.log
 echo "$(date)" > ./logs/test.log
 
