@@ -1,0 +1,9 @@
+Get all from employee.
+Get ProductName from product and Price from product.
+Get CustomerID from order linking customer by their CustomerID.
+Get LastName from customer such that its values are either MariaAnders, Fuller or Suyama.
+Get OrderDate from order such that CustomerID matches values within the CustomerID in customer where Country equals UK.
+Get all from employee and FirstName from employee where BirthDate is less than 12-16-1965.
+Get ProductName, Price, CategoryID and SupplierID from product where Price is greater than 25 and CategoryID is greater than 4.
+Get ProductName, Price, CategoryID and SupplierID from product where Price is greater than 25 and either CategoryID is greater than 4 or SupplierID is less than 3.
+Get OrderID from order where either OrderDate is greater than 11-22-1996 or ShipperID equals 2.

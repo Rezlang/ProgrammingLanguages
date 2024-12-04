@@ -1,0 +1,18 @@
+Get all from employee.
+	[[employee,[EmployeeID,LastName,FirstName,BirthDate,Photo],[[1,Davolio,Nancy,12-8-1968,EmpID1.pic],[2,Fuller,Andrew,2-19-1952,EmpID2.pic],[3,Leverling,Janet,8-30-1963,EmpID3.pic],[4,Peacock,Margaret,9-19-1958,EmpID4.pic],[5,Buchanan,Steven,3-4-1955,EmpID5.pic],[6,Suyama,Michael,7-2-1963,EmpID6.pic],[7,King,Robert,5-29-1960,EmpID7.pic],[8,Callahan,Laura,1-9-1958,EmpID8.pic],[9,Dodsworth,Anne,7-2-1969,EmpID9.pic],[10,West,Adam,9-19-1928,EmpID10.pic]]]]
+Get ProductName from product and Price from product.
+	[[product,[ProductName],[[Chais],[Chang],[AniseedSyrup],[ChefAntonsCajunSeasoning],[ChefAntonsGumboMix],[GrandmasBoysenberrySpread],[UncleBobOrganicDriedPears],[NorthwoodsCranberrySauce],[MishiKobeKiku],[Ikura],[QuesoCabrales],[QuesoManchegoLaPastora],[Konbu],[Tofu],[GenenShouyu],[Pavlova],[AliceMutton],[FooBar]]],[product,[Price],[[18],[19],[10],[22],[21.35],[25],[30],[40],[97],[31],[21],[38],[6],[23.25],[15.5],[17.45],[39],[26]]]]
+Get CustomerID from order linking customer by their CustomerID.
+	[[order,[CustomerID],[]]]
+Get LastName from customer such that its values are either MariaAnders, Fuller or Suyama.
+	[[customer,[LastName],[]]]
+Get OrderDate from order such that CustomerID matches values within the CustomerID in customer where Country equals UK.
+	[[order,[OrderDate],[]]]
+Get all from employee and FirstName from employee where BirthDate is less than 12-16-1965.
+	[[employee,[EmployeeID,LastName,FirstName,BirthDate,Photo],[[2,Fuller,Andrew,2-19-1952,EmpID2.pic],[3,Leverling,Janet,8-30-1963,EmpID3.pic],[4,Peacock,Margaret,9-19-1958,EmpID4.pic],[5,Buchanan,Steven,3-4-1955,EmpID5.pic],[6,Suyama,Michael,7-2-1963,EmpID6.pic],[7,King,Robert,5-29-1960,EmpID7.pic],[8,Callahan,Laura,1-9-1958,EmpID8.pic],[10,West,Adam,9-19-1928,EmpID10.pic]]],[employee,[FirstName],[[Andrew],[Janet],[Margaret],[Steven],[Michael],[Robert],[Laura],[Adam]]]]
+Get ProductName, Price, CategoryID and SupplierID from product where Price is greater than 25 and CategoryID is greater than 4.
+	[[product,[ProductName,Price,CategoryID,SupplierID],[[UncleBobOrganicDriedPears,30,7,3],[MishiKobeKiku,97,6,4],[Ikura,31,8,4],[AliceMutton,39,6,7]]]]
+Get ProductName, Price, CategoryID and SupplierID from product where Price is greater than 25 and either CategoryID is greater than 4 or SupplierID is less than 3.
+	[[product,[ProductName,Price,CategoryID,SupplierID],[[UncleBobOrganicDriedPears,30,7,3],[MishiKobeKiku,97,6,4],[Ikura,31,8,4],[AliceMutton,39,6,7],[FooBar,26,2,1]]]]
+Get OrderID from order where either OrderDate is greater than 11-22-1996 or ShipperID equals 2.
+	[[order,[OrderID],[[10365],[10383],[10278],[10384],[10436],[10297],[10326],[10362],[10389],[10410]]]]
