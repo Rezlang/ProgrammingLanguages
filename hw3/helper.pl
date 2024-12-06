@@ -27,6 +27,7 @@ print_tables([Table | Rest]) :-
     print_tables(Rest).
 % Rule to print a single table
 print_table([TableName, Headers, Rows]) :-
+    
     nl,
     format('            ~w                ~n', [TableName]), % Print the table name
     format('--------------------------------~n'),
